@@ -1,0 +1,457 @@
+DOKUMENTASI SISTEM GAME (CLIENT-SIDE V1.0)
+1. Game System Global (Core & Config)
+Sistem inti yang mengatur seluruh parameter dan penyimpanan data.
+
+Mata Uang: PTS (Points).
+
+Penyimpanan Data:
+
+Primary: Firebase Firestore (Collection: users).
+
+Auth: Telegram WebApp initDataUnsafe (Validasi User ID & Username).
+
+Tanaman (Crops): Terdiri dari 5 Rarity dengan probabilitas gacha (DropEngine):
+
+Common (10% Chance): Cabbage, Spinach, Water Spinach, Corn, Eggplant. (Waktu: 240s, Harga: 20-50).
+
+Uncommon (6% Chance): Tomato, Carrot, Broccoli, Potato, Cucumber (Waktu: 300s, Harga: 50-70).
+
+Rare (2% Chance): Asparagus, Bell Pepper, Cauliflower, Purple Cabbage, Oyster Mushroom. (Waktu: 420s, Harga: 120-250).
+
+Epic (0.5% Chance): Shiitake Mushroom, Artichoke, Bamboo Shoot, Giant Pumpkin. (Waktu: 480s, Harga: 400-800).
+
+Legendary (0.1% Chance): Wasabi, Black Garlic, Black Truffle. (Waktu: 720s, Harga: 2000-8000).
+
+
+2. Game System Plan (Membership)
+Sistem tingkatan akun yang membatasi fitur farm dan gudang.
+
+Mekanisme Upgrade:user baru langsung terdaftar di plan Free,
+
+Tier List:
+
+FREE: 1 Plot Aktif siap tanam dan 2 Locked boisa di bel di shop (Max Plot 3), Max 100 Item, Ads High, Bonus Jual 0%. (default untuk user baru langsung terdaftar Free)
+
+MORTGAGE (20 USDT): 4 Plot Aktif siap tanam dan 2 bisa di beli di shop (Max Plot 6), Max 240 Item, Ads Medium, Bonus Jual +5%.
+
+TENANT (30 USDT): 7 Plot Aktif siap tanam dan  2 bisa di beli di shop (Max Plot 9), Max 500 Item, Ads None, Bonus Jual +15%.
+
+OWNER (50 USDT): 10 Plot Aktif siap tanam dan 2 bisa di beli di shop (Maxplot 12), Unlimited Storage, Ads None, Bonus Jual +30% (VIP).
+
+3. Game System Farm & Harvest
+Mekanisme utama gameplay penanaman dan panen.
+
+Slot Logic:
+
+Slot 1: Terbuka otomatis (Tutorial).
+
+Slot 2: Terbuka jika beli Item Land Plot #2 (10k PTS).
+
+Slot 3: Terbuka jika beli Item Land Plot #3 (750k PTS).
+
+Slot 4 - 12 terbuka jika beli PLAN MEMBERSHIP
+
+Planting: Menggunakan tombol "Plant Random". Jenis tanaman ditentukan oleh RNG berdasarkan probabilitas rarity.
+
+Harvesting:
+
+Muncul "Bubble Besar" saat panen siap.
+
+Mengharuskan nonton Iklan (Reward Ad) untuk memanen.
+
+Auto-Replant: Setelah panen, slot otomatis menanam ulang benih baru secara acak.
+
+Yield: Default 1 item. Jika ada buff Yield Booster, peluang 25% dapat double crop (2 item).
+
+Visual: Tanaman memiliki fase visual (Sprout -> Growing -> Mature). Ada animasi item terbang ke gudang saat panen.
+
+4. Game System Task (Daily)
+Sistem tugas harian untuk retensi pemain.
+
+Reset: Setiap 24 jam (Timer lokal di localStorage).
+
+Daftar Tugas: Login, Visit Farm, Gift, Clean, Water, Fertilizer, Pest, Harvest, Sell.
+
+Reward: Berkisar antara 50 - 80 PTS per tugas.
+
+Mekanisme: Klik Tugas -> Nonton Iklan -> Dapat Reward -> Cooldown aktif.
+
+5. Game System Spin (Lucky Wheel)
+Fitur gacha roda keberuntungan.
+
+Mode Free: Cooldown 1 Jam. Menampilkan hasil dulu, baru tawarkan "Watch Ad to Claim" (Psikologi Loss Aversion).
+
+Mode Paid: Biaya 150 PTS. Hadiah langsung masuk tanpa iklan.
+
+Hadiah:
+
+Koin (Low 50, Mid 100, High 200).
+
+Item Herb (Common, Rare - Random jenisnya).
+
+Jackpot (1500 PTS).
+
+6. Game System Warehouse
+Penyimpanan hasil panen.
+
+Kapasitas: Base 100 + Extra Storage (Beli di Market) + Limit dari Plan.
+
+Visual: Progress bar berubah warna (Hijau -> Kuning -> Merah/Penuh).
+
+Logika Penuh: Jika gudang penuh, player tidak bisa panen (muncul popup suruh jual).
+
+Display: Item dikelompokkan dengan border warna sesuai Rarity.
+
+7. Game System Market (Buy & Sell)
+Pusat ekonomi permainan.
+
+Sell System (Jual Panen):
+
+Harga Dinamis: Harga berubah setiap jam (random antara range min-max).
+
+Price Booster: Tombol tonton iklan untuk menaikkan harga jual sebesar +15% Sekali/24 jam.
+
+Buff Bonus: Harga jual ditambah persentase dari Plan Membership dan item Trade Permit.
+
+Sell All: Tombol jual semua isi gudang sekaligus.
+
+Buy System (Toko Item):
+
+Aset Permanen: Tanah (Land Plot), Tambah Gudang (+20 Slot).
+
+Consumables (Buff 24 Jam):
+
+Speed Soil: -10% waktu tumbuh.
+
+Growth Fertilizer: -20% waktu tumbuh.
+
+Trade Permit: +10% harga jual.
+
+Rare Essence: +20% peluang dapat tanaman Rare.
+
+Yield Booster: Efek permanen chance double harvest.
+
+8. Game System Affiliate
+Sistem referral berjenjang.
+
+Binding: Menggunakan parameter URL ?startapp=USERID. Pengundang (Upline) terkunci permanen di Firebase user.
+
+Komisi: 10% dari nilai PENJUALAN (Sell) yang dilakukan teman (Downline).
+
+Status: Teman dianggap "Active Member" setelah melakukan penjualan pertama kali di Market.
+
+Display: Menampilkan total earnings, total teman, dan list teman beserta kontribusi mereka.
+
+9. Game System Withdraw
+Sistem pencairan dana (PTS ke Crypto).
+
+Rate: 250,000 PTS = 1 USDT.
+
+Metode:
+
+FaucetPay: Input Email. Fee 0%. Instant. (Akun terkunci ke email pertama yang sukses WD).
+
+Direct Wallet: Input Address Blockchain. Fee 5%.
+
+Limit:
+
+User Baru (Belum pernah WD): Min 100 PTS.
+
+User Lama: Min 1,000 PTS.
+
+API: Mengirim request POST ke /api/withdraw
+
+Mata Uang: Support Hanya TON
+
+
+
+Dokumen UX.md ini dirancang untuk menjadi panduan pengalaman pengguna (User Experience) bagi game Start From Zero (Cyber Farmer). Dokumen ini fokus pada kenyamanan pemain, alur permainan (core loop), dan integrasi monetisasi yang mulus di platform Telegram Mini App (TMA).
+UX Design Document: Start From Zero (Cyber Farmer)
+1. Visi & Filosofi Pengalaman Pengguna
+
+    Tujuan Utamanya: Menciptakan game simulasi pertanian yang santai namun adiktif, dioptimalkan untuk penggunaan satu tangan di perangkat seluler.
+
+    Gaya Visual: Low Poly Cartoon dengan perspektif isometrik yang bersih untuk memudahkan navigasi pada layar kecil.
+
+    Target Platform: Telegram Mini App (TMA) - menekankan aksesibilitas cepat melalui sistem Cloud Storage dan integrasi akun Telegram.
+
+2. Interaksi Pengguna & Desain Layout
+Zona Kendali Jempol (The Thumb Zone)
+
+Desain antarmuka diletakkan pada area yang mudah dijangkau oleh jempol untuk mendukung penggunaan satu tangan.
+
+    Navigasi Kebun (1, 2, 3): Diletakkan di tengah bawah untuk perpindahan halaman lahan yang cepat.
+
+    Sidebar Kanan: Tombol Spin, Task, dan Wiki diletakkan secara vertikal di sisi kanan agar mudah dijangkau oleh jempol tangan kanan.
+
+    Menu Navigasi Utama: Baris bawah (Farm, Barn, Market, Affiliate, More) adalah jangkar utama navigasi pemain.
+
+Feedback Visual & Haptic
+
+    Progres Lahan: Pemain mendapatkan indikator visual langsung melalui bar progres dan perubahan tahap tanaman (Sprout -> Growing -> Mature).
+
+    Indikator Gudang: Progress bar berubah warna dari Hijau -> Kuning -> Merah (Penuh) untuk memberikan peringatan visual kepada pemain agar segera menjual hasil panen.
+
+    Notifikasi: Titik merah (Red Dot) pada tombol Task memberikan petunjuk halus bahwa ada tugas harian yang bisa diklaim.
+
+3. Alur Utama Permainan (The Core Loop)
+
+Pengalaman pengguna dibangun di sekitar siklus ekonomi sederhana namun memuaskan:
+
+    Menanam (Planting): Pemain menekan plot kosong. Sistem RNG menentukan kelangkaan tanaman.
+
+    Menunggu (Growing): Pemain melihat tanaman tumbuh secara real-time.
+
+    Memanen (Harvesting): Muncul Bubble Besar sebagai pemicu visual. Pemain menonton iklan untuk memanen.
+
+    Menjual (Selling): Pemain pergi ke Market untuk menukarkan item menjadi PTS.
+
+    Berkembang (Progressing): Menggunakan PTS untuk membeli aset permanen atau Membership Plan untuk membuka lebih banyak lahan.
+
+4. Arsitektur Informasi (Menu & Navigasi)
+Navigasi Bawah	Fungsi Utama
+Farm	Area utama permainan dengan grid hexagonal 2x2 per halaman.
+Barn
+
+Manajemen inventaris dengan border warna sesuai rarity item.
+Market
+
+Pusat ekonomi dinamis di mana harga berubah setiap jam.
+Affiliate
+
+Sistem rujukan untuk melihat total pendapatan dari teman (Downline).
+More	Menu tambahan untuk pengaturan dan profil mendalam.
+5. Strategi UX Monetisasi
+
+Monetisasi dirancang agar tidak menghentikan arus permainan secara paksa, melainkan sebagai pertukaran nilai:
+
+    Reward Ads: Digunakan sebagai syarat panen (Harvest) dan klaim tugas harian.
+
+    Loss Aversion pada Spin: Pada mode Free Spin, hasil ditunjukkan terlebih dahulu sebelum menawarkan iklan untuk mengklaimnya, meningkatkan keinginan pemain untuk tidak kehilangan hadiah tersebut.
+
+    Incentivized Upgrades: Membership Plan (Mortgage, Tenant, Owner) menawarkan keuntungan nyata seperti penghapusan iklan dan penyimpanan tak terbatas untuk mengurangi hambatan bermain.
+
+6. Keamanan & Kepercayaan Pengguna
+
+    Wallet Locking: Alamat penarikan dikunci ke data sukses pertama untuk mencegah pencurian akun.
+
+    Transparansi Probabilitas: Probabilitas kelangkaan tanaman (DropEngine) dirinci dengan jelas untuk membangun kepercayaan pemain terhadap sistem gacha.
+
+
+
+7. User Flow: Perjalanan Pemain
+7.1 Alur Autentikasi & Onboarding
+
+Proses masuknya pemain ke dalam ekosistem game melalui Telegram.
+
+    Akses TMA: Pengguna membuka bot Telegram atau mengklik link referal.
+
+    Validasi Sistem: App.jsx mengambil initData dari Telegram WebApp.
+
+    Pengecekan Database: API /auth/login memeriksa apakah User ID sudah terdaftar di Firestore.
+
+    Percabangan:
+
+        Pemain Baru: Sistem membuat dokumen baru di koleksi users dengan status FREE, saldo 0 PTS, dan Slot 1 aktif.
+
+        Pemain Lama: Memuat data profil, status lahan, dan inventaris gudang.
+
+    Masuk Game: Pemain diarahkan ke layar utama (Home Screen).
+
+7.2 Alur Inti Permainan (Core Farming Loop)
+
+Siklus aktivitas harian yang dilakukan pemain untuk mendapatkan keuntungan.
+
+    Lahan Kosong: Pemain menekan petak tanah aktif (ACTIVE).
+
+    Menanam (Planting): Pemain memilih "Plant Random". Sistem melakukan roll RNG untuk menentukan jenis tanaman berdasarkan tabel kelangkaan (DropEngine).
+
+    Masa Tumbuh: Tanaman melewati fase visual (Sprout -> Growing) yang diatur oleh timer di Phaser.
+
+    Siap Panen: Muncul indikator Bubble AD. Pemain menekan bubble tersebut.
+
+    Picu Iklan: Pemain harus menonton Reward Ad hingga selesai.
+
+    Penyimpanan: Item otomatis masuk ke Warehouse (Gudang).
+
+    Auto-Replant: Slot secara otomatis menanam benih baru untuk memulai kembali siklus.
+
+7.3 Alur Ekonomi: Penjualan & Penarikan (Withdraw)
+
+Proses mengubah hasil jerih payah menjadi aset kripto.
+
+    Cek Inventaris: Pemain membuka menu Market atau Barn.
+
+    Penjualan Dinamis: Pemain melihat harga pasar saat ini (berubah setiap jam).
+
+    Eksekusi Jual: Pemain menekan "Sell All". Saldo PTS bertambah di header HUD.
+
+    Permintaan Withdraw: Pemain masuk ke menu Withdraw.
+
+    Validasi Batas: Sistem mengecek saldo minimum (100 PTS untuk user baru, 1.000 PTS untuk lama).
+
+    Metode Pembayaran: Pemain memilih FaucetPay (biaya 0%) atau Direct Wallet (biaya 10%).
+
+    Konfirmasi & Pengiriman: API mengirim permintaan penarikan. Status transaksi muncul di riwayat profil.
+
+7.4 Alur Progresi: Upgrade & Ekspansi
+
+Bagaimana pemain meningkatkan produktivitas kebun mereka.
+
+    Akses Shop/Member: Pemain menekan tombol Market atau Member.
+
+    Pemilihan Aset:
+
+        Permanent Land: Membeli Slot 2 atau Slot 3 menggunakan PTS.
+
+        Membership Plan: Membeli paket OWNER via USDT untuk membuka 10 slot sekaligus dan unlimited storage.
+
+    Validasi Saldo: API /market/buy atau /user/upgrade memverifikasi kecukupan PTS atau bukti pembayaran.
+
+    Update Lahan: Phaser merender ulang grid kebun dengan petak baru yang kini berstatus ACTIVE.
+
+8. Matriks Interaksi Pengguna
+Tindakan	Jenis Interaksi	Respon Sistem
+Klik Plot Aktif	Ketukan Tunggal	Membuka menu tanam atau panen.
+Ganti Halaman (1, 2, 3)	Ketukan Tunggal + Haptic	Phaser merender set data lahan yang berbeda.
+Klik Spin	Ketukan Tunggal	Animasi roda berputar; pemicu modal klaim hadiah.
+Lihat Iklan	Menunggu (5-30 detik)	Membuka kunci fungsi panen atau bonus harga.
+
+
+9. Edge Cases & Error Handling
+
+Bagian ini merinci bagaimana sistem merespon kondisi di luar alur normal untuk menjaga pengalaman pengguna tetap stabil.
+9.1 Gudang Penuh (Warehouse Full)
+
+Pemain tidak bisa terus memanen tanpa mengelola inventaris.
+
+    Indikator Visual: Bar progres gudang berubah warna menjadi merah saat mendekati atau mencapai batas kapasitas.
+
+    Respon Sistem: Jika pemain mencoba memanen saat gudang penuh, sistem akan memblokir aksi tersebut dan menampilkan popup peringatan.
+
+    Solusi UX: Pemain diarahkan langsung melalui tombol di popup untuk menuju Market guna menjual hasil panen.
+
+9.2 Kegagalan Koneksi & Server (Network Issues)
+
+Menangani situasi saat API tidak memberikan respon yang diharapkan (seperti Error 404 atau 500).
+
+    Loading State: Menampilkan layar loading dengan ikon putar saat data sedang dimuat atau saat sinkronisasi API sedang berlangsung.
+
+    Dev Mode Fallback: Jika dijalankan di lingkungan pengembangan (localhost) dan API gagal, sistem dapat menyediakan data dummy agar antarmuka tetap bisa diuji.
+
+    Error Popups: Menampilkan pesan kesalahan yang spesifik (misal: "Server Error" atau "Koneksi Terputus") agar pemain tahu bahwa masalah bukan pada perangkat mereka.
+
+9.3 Sumber Daya Tidak Mencukupi (Insufficient Resources)
+
+Mencegah transaksi ilegal saat saldo atau persyaratan tidak terpenuhi.
+
+    Saldo Kurang: Saat mencoba membeli lahan ekstra atau melakukan upgrade, sistem akan mengecek saldo PTS. Jika kurang, muncul tawaran untuk melakukan deposit atau terus bermain.
+
+    Batas Minimum Withdraw: Jika penarikan di bawah limit (100 PTS untuk user baru/1.000 PTS untuk user lama), tombol konfirmasi akan dinonaktifkan atau memicu peringatan.
+
+9.4 Pembatasan Platform & Keamanan (Security Guard)
+
+Melindungi integritas ekonomi game dari akses yang tidak sah.
+
+    Blokir Desktop: Sistem secara otomatis mendeteksi platform dan memblokir akses jika dibuka melalui browser desktop atau web biasa; hanya mendukung android dan ios.
+
+    Validasi Data Palsu: Jika data initData Telegram tidak valid atau terdeteksi palsu, sistem akan menolak akses login dengan pesan "Access Denied".
+
+    Wallet Lock: Alamat dompet kripto akan dikunci secara otomatis setelah penarikan pertama yang sukses untuk mencegah perubahan akun oleh pihak ketiga.
+
+9.5 Kegagalan Pemuatan Iklan (Ad Load Failures)
+
+Karena iklan bersifat wajib untuk panen, kegagalan muat harus ditangani.
+
+    Retry Logic: Jika jaringan iklan pertama gagal, sistem secara otomatis beralih ke jaringan iklan berikutnya dalam daftar rotasi (7-Step Round Robin).
+
+    Status Iklan: Jika seluruh jaringan iklan gagal dimuat, sistem akan memberikan pesan kepada pemain untuk mencoba lagi dalam beberapa saat agar alur panen tidak terhambat permanen.
+
+
+
+Master Development Guide: Cyber Farmer (V2.1)
+1. Identitas Proyek & Arsitektur Teknis
+
+    Nama Proyek: Cyber Farmer (Start From Zero).
+
+    Platform: Telegram Mini App (TMA) - Khusus Mobile (Android/iOS).
+
+    Tech Stack:
+
+        Frontend: React 19.2.0 & Vite 7.2.4.
+
+        Game Engine: Phaser v3.90 (untuk rendering kebun hexagonal).
+
+        Backend: Vercel Serverless Functions (Node.js).
+
+        Database: Firebase Firestore (Koleksi: users).
+
+    Lingkungan Pengembangan: CachyOS (Arch-based) pada hardware ThinkPad E470.
+
+2. Mekanik Utama Permainan
+A. Sistem Pertanian (Farming)
+
+    Grid Lahan: Formasi 2x2 petak hexagonal per halaman (Total hingga 12 slot).
+
+    Siklus Tanaman: Menanam (RNG) → Tumbuh (Timer) → Panen (Wajib Nonton Iklan) → Auto-Replant.
+
+    Tingkat Kelangkaan (DropEngine):
+
+        Common (10%): Cabbage, Corn, dll. (Waktu: 240s).
+
+        Uncommon (6%): Tomato, Carrot, dll. (Waktu: 300s).
+
+        Rare (2%): Bell Pepper, Mushroom, dll. (Waktu: 420s).
+
+        Epic (0.5%): Giant Pumpkin, dll. (Waktu: 480s).
+
+        Legendary (0.1%): Black Truffle, Wasabi, dll. (Waktu: 720s).
+
+B. Tingkatan Membership (Plans)
+Plan	Harga	Slot Aktif	Kapasitas Gudang	Bonus Jual
+FREE	Gratis	1 (+2 beli)	100 Item	0%
+MORTGAGE	20 USDT	4 (+2 beli)	240 Item	+5%
+TENANT	30 USDT	7 (+2 beli)	500 Item	+15%
+OWNER	50 USDT	10 (+2 beli)	Unlimited	+30%
+3. Tata Letak UI & Cetak Biru UX
+A. Struktur Layer (Mobile Optimized)
+
+    Header HUD (React): Profil pengguna, badge OWNER, dan saldo PTS.
+
+    Area Utama (Phaser): Gedung Herbalist Warehouse di atas dan 4 Hex-Plots di tengah.
+
+    Sidebar (React): Tombol melayang di kanan (Spin, Task, Wiki) untuk jangkauan jempol.
+
+    Kontrol Bawah (React): Navigasi halaman kebun (1, 2, 3) dan Dock Menu Utama.
+
+B. Aset Visual Kunci
+
+    Lahan: soil_dry.jpg (Aktif) & soil_locked.png (Terkunci).
+
+    Bangunan: warehouse_iso.png (Gedung Herbalist).
+
+    Tanaman: stage_sprout.png (Tunas) & stage_growing.png (Tumbuh).
+
+4. Ekonomi & Keamanan
+
+    Mata Uang: 1 USDT = 10,000 PTS.
+
+    Penarikan (Withdraw): Mendukung FaucetPay (0% fee) dan Direct Wallet TON (10% fee).
+
+    Sistem Afiliasi: Komisi 10% dari nilai penjualan teman (Downline).
+
+    Keamanan:
+
+        Validasi HMAC-SHA256 untuk initData Telegram.
+
+        Dompet terkunci secara permanen pada penarikan sukses pertama.
+
+        Seluruh RNG dilakukan di sisi server (Backend) untuk mencegah cheat.
+
+5. Penanganan Kasus Khusus (Edge Cases)
+
+    Gudang Penuh: Pemain dilarang memanen dan diarahkan langsung ke Market untuk menjual item.
+
+    Koneksi Terputus: Menampilkan layar loading/error; di mode pengembangan, sistem menyediakan data dummy agar UI tetap aktif.
+
+    Rotasi Iklan: Menggunakan sistem 7 langkah (Adsgram, Monetag, dll.) untuk memastikan ketersediaan iklan setiap kali pemain memanen.

@@ -1,0 +1,32 @@
+    // Update inventory
+    setInventory(inv => ({
+      ...inv,
+      [cropName]: {
+        cropName,
+        rarity: cropRarity,
+        quantity: (inv[cropName]?.quantity || 0) + amount
+      }
+    }));
+    
+    // Update user state
+    setUser(u => ({ 
+        ...u, 
+        storageUsed: u.storageUsed + amount,
+        totalHarvests: u.totalHarvests + amount 
+    }));
+
+    // Update slot status
+    setSlots(prev => prev.map(s => {
+      if (s.id === slotId && s.status === SlotStatus.READY) {
+        return {
+          ...s,
+          status: SlotStatus.EMPTY,
+          crop: null,
+          plantedAt: null,
+          isAdReady: false
+        };
+      }
+      return s;
+    }));
+
+    updateTaskProgress('HARVEST', amount);

@@ -1,0 +1,66 @@
+"  // Harvest single slot (with ad check)
+  const harvestCrop = useCallback((slotId: number, requireAd: boolean = true): { success: boolean; message?: string; isDouble?: boolean; storageFull?: boolean } => {
+    const slot = slots.find(s => s.id === slotId);
+    if (!slot || slot.status !== SlotStatus.READY || !slot.crop) {
+      return { success: false, message: 'Invalid slot' };
+    }
+
+    const totalMax = user.storageMax + user.extraStorage;
+    
+    // Storage validation - PRE-HARVEST CHECK
+    if (user.storageMax !== Infinity && user.storageUsed >= totalMax) {
+      return { success: false, message: 'Storage full - cannot harvest', storageFull: true };
+    }
+
+    // TENANT/OWNER bypass ads
+    if (requireAd && isAdFreeUser()) {
+      requireAd = false;
+    }
+
+    const cropName = slot.crop.name;
+    const cropRarity = slot.crop.rarity;
+    const isDouble = user.hasYieldBooster && Math.random() < 0.25;
+    const amount = isDouble ? 2 : 1;
+
+    // Storage check with yield
+    if (user.storageMax !== Infinity && (user.storageUsed + amount) > totalMax) {
+      return { success: false, message: 'Not enough storage for harvest', storageFull: true };
+    }
+
+    // Update inventory
+    setInventory(inv => ({
+      ...inv,
+      [cropName]: {
+        cropName,
+        rarity: cropRarity,
+        quantity: (inv[cropName]?.quantity || 0) + amount
+      }
+    }));
+    
+    // Update user state
+    setUser(u => ({ 
+        ...u, 
+        storageUsed: u.storageUsed + amount,
+        totalHarvests: u.totalHarvests + amount 
+    }));
+
+    // Update slot status
+    setSlots(prev => prev.map(s => {
+      if (s.id === slotId && s.status === SlotStatus.READY) {
+        return {
+          ...s,
+          status: SlotStatus.EMPTY,
+          crop: null,
+          plantedAt: null,
+          isAdReady: false
+        };
+      }
+      return s;
+    }));
+
+    updateTaskProgress('HARVEST', amount);
+    
+    // Auto-Replant Logic
+    setTimeout(() => plantCrop(slotId), 200);
+    return { success: true, isDouble };
+  }, [user, slots, plantCrop, updateTaskProgress, isAdFreeUser]);"

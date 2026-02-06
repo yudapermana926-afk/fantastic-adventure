@@ -7,7 +7,7 @@ import { SlotStatus, Plan, Rarity, InventoryItem, ReferralData } from '../../typ
 import { CROPS, PLAN_CONFIG } from '../../constants';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "cryptofarm-bd14a.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "cryptofarm-bd14a",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "cryptofarm-bd14a.firebasestorage.app",
